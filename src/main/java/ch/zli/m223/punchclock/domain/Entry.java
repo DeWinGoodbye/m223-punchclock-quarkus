@@ -23,6 +23,10 @@ public class Entry {
     private Category category;
 
     @ManyToOne
+    @JoinColumn(name = "project_id", referencedColumnName = "id")
+    private Project project;
+
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
     
@@ -56,6 +60,14 @@ public class Entry {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public User getUser() {
