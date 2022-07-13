@@ -16,6 +16,8 @@ public class Entry {
     @Column(nullable = false)
     private LocalDateTime checkOut;
 
+    @ManyToOne Category category; 
+
     public Long getId() {
         return id;
     }
@@ -39,4 +41,5 @@ public class Entry {
     public void setCheckOut(LocalDateTime checkOut) {
         this.checkOut = checkOut;
     }
+
 }

@@ -5,7 +5,10 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import ch.zli.m223.punchclock.domain.Entry;
 
@@ -21,6 +24,18 @@ public class EntryService {
     public Entry createEntry(Entry entry) {
         entityManager.persist(entry);
         return entry;
+    }
+
+    @Transactional
+    public void removeEntry(Long EntryId){
+        Entry entry = entityManager.find(Entry.class, EntryId);
+        entityManager.remove(entry);
+    }
+
+    @Transactional
+    public void updateEntry(Long EntryId){
+        Entry entry = entityManager.find(Entry.class, EntryId);
+        entityManager.merge(entry);
     }
 
     @SuppressWarnings("unchecked")
