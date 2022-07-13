@@ -1,6 +1,8 @@
 package ch.zli.m223.punchclock.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.AssertTrue;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,8 +18,14 @@ public class Entry {
     @Column(nullable = false)
     private LocalDateTime checkOut;
 
-    @ManyToOne Category category; 
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+    
     public Long getId() {
         return id;
     }
@@ -42,4 +50,24 @@ public class Entry {
         this.checkOut = checkOut;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @AssertTrue(message="The Check In Date & Time should be before the Check Out Date & Time!")
+    private boolean isCheckOutAfterCheckIn() {
+        return checkOut.isAfter(checkIn);
+    }
 }

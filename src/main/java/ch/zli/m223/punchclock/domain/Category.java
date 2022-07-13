@@ -1,18 +1,20 @@
 package ch.zli.m223.punchclock.domain;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 
 @Entity
 public class Category {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany (mappedBy="Entry.category")
 
     @Column(nullable = false)
     private String name;
 
+    @OneToMany(mappedBy="category")
+    private List<Entry> entries;
 
     public Long getId() {
         return id;
@@ -30,4 +32,11 @@ public class Category {
         this.name = name;
     }
 
+    public List<Entry> getEntries() {
+        return this.entries;
+    }
+
+    public void setEntries(ArrayList<Entry> entries) {
+        this.entries = entries;
+    }
 }
