@@ -5,10 +5,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import ch.zli.m223.punchclock.domain.Entry;
 
@@ -26,21 +23,22 @@ public class EntryService {
         return entry;
     }
 
-    @Transactional
-    public void removeEntry(Long EntryId){
-        Entry entry = entityManager.find(Entry.class, EntryId);
-        entityManager.remove(entry);
-    }
-
-    @Transactional
-    public void updateEntry(Long EntryId){
-        Entry entry = entityManager.find(Entry.class, EntryId);
-        entityManager.merge(entry);
-    }
-
     @SuppressWarnings("unchecked")
     public List<Entry> findAll() {
         var query = entityManager.createQuery("FROM Entry");
         return query.getResultList();
+    }
+
+    @Transactional
+    public Entry updateEntry(Entry entry) {
+        entityManager.merge(entry);
+        return entry;
+    }
+
+    @Transactional
+    public Entry deleteEntry(long id) {
+        Entry entry = entityManager.find(Entry.class, id);
+        entityManager.remove(entry);
+        return entry;
     }
 }

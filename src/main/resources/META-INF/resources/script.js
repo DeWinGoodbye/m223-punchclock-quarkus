@@ -1,27 +1,91 @@
 const URL = 'http://localhost:8080';
 let entries = [];
-let mode = 'create';
-let currentEntry;
 
-const dateAndTimeToDate = (dateString, timeString) => {
-    return new Date(`${dateString}T${timeString}`).toISOString();
-};
+function openUpdateEntryForm() {
+    document.getElementById("error").innerText = "";
+    document.getElementById("createEntryForm").removeEventListener("submit", createEntry);
+    document.getElementById("createEntryForm").addEventListener("submit", updateEntry);
+    document.getElementById("formTitle").innerText = "Update entry";
+    document.getElementById("updateBack").style.display = "block";
+}
 
-// API Requests
-const createEntry = (entry) => {
+function closeUpdateEntryForm() {
+    document.getElementById("error").innerText = "";
+    document.getElementById("createEntryForm").removeEventListener("submit", updateEntry);
+    document.getElementById("createEntryForm").addEventListener("submit", createEntry);
+    document.getElementById("formTitle").innerText = "Add entry";
+    document.getElementById("updateBack").style.display = "none";
+}
+
+const createEntry = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    let data = {};
+    data["checkIn"] = formData.get("checkIn");
+    data["checkOut"] = formData.get("checkOut");
+    data["category"] = categories[formData.get("category")];
+
     fetch(`${URL}/entries`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(entry)
+        body: JSON.stringify(data)
     }).then((result) => {
         result.json().then((entry) => {
-            entries.push(entry);
-            renderEntries();
+            if(entry.id == undefined) {
+                document.getElementById("error").innerText = entry.parameterViolations[0].message;
+            }else {
+                indexEntries();
+            }
+        });
+    }).catch((result) => {
+        result.json().then((response) => {
+            document.getElementById("error").innerText = response.parameterViolations[0].message;
         });
     });
 };
+
+const updateEntry = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    let data = {};
+    data["id"] = formData.get("id");
+    data["checkIn"] = formData.get("checkIn");
+    data["checkOut"] = formData.get("checkOut");
+    data["category"] = categories[formData.get("category")];
+
+    fetch(`${URL}/entries`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then((result) => {
+        result.json().then((entry) => {
+            if(entry.checkIn == undefined) {
+                document.getElementById("errorUpdate").innerText = entry.parameterViolations[0].message;
+            }else {
+                closeUpdateEntryForm();
+                indexEntries();
+            }
+        });
+    }).catch((result) => {
+        result.json().then((response) => {
+            document.getElementById("errorUpdate").innerText = response.parameterViolations[0].message;
+        });
+    });
+};
+
+
+const deleteEntry = (id) => {
+    fetch(`${URL}/entries/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+}
 
 const indexEntries = () => {
     fetch(`${URL}/entries`, {
@@ -35,88 +99,34 @@ const indexEntries = () => {
     renderEntries();
 };
 
-const deleteEntry = (id) => {
-    fetch(`${URL}/entries/${id}`, {
-        method: 'DELETE'
-    }).then((result) => {
-        indexEntries();
-    });
-};
-
-const updateEntry = (entry) => {
-    fetch(`${URL}/entries/${entry.id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(entry)
-    }).then((result) => {
-        result.json().then((entry) => {
-            entries = entries.map((e) => e.id === entry.id ? entry : e);
-            renderEntries();
-        });
-    });
-}
-
-// Rendering
-const resetForm = () => {
-    const entryForm = document.querySelector('#entryForm');
-    entryForm.reset();
-    mode = 'create';
-    currentEntry = null;
-}
-
-const saveForm = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const entry = {};
-    entry['checkIn'] = dateAndTimeToDate(formData.get('checkInDate'), formData.get('checkInTime'));
-    entry['checkOut'] = dateAndTimeToDate(formData.get('checkOutDate'), formData.get('checkOutTime'));
-
-    if (mode === 'create') {
-        createEntry(entry);
-    } else {
-        entry.id = currentEntry.id;
-        updateEntry(entry);
-    }
-    resetForm();
-}
-
-const editEntry = (entry) => {
-    mode = 'edit';
-    currentEntry = entry;
-
-    const entryForm = document.querySelector('#entryForm');
-    const checkInDateField = entryForm.querySelector('[name="checkInDate"]');
-    checkInDateField.value = entry.checkIn.split('T')[0];
-    const checkInTimeField = entryForm.querySelector('[name="checkInTime"]');
-    checkInTimeField.value = entry.checkIn.split('T')[1].slice(0, -3);
-    const checkOutDateField = entryForm.querySelector('[name="checkOutDate"]');
-    checkOutDateField.value = entry.checkOut.split('T')[0];
-    const checkOutTimeField = entryForm.querySelector('[name="checkOutTime"]');
-    checkOutTimeField.value = entry.checkOut.split('T')[1].slice(0, -3);
-}
-
 const createCell = (text) => {
     const cell = document.createElement('td');
     cell.innerText = text;
     return cell;
 };
 
-const createActions = (entry) => {
-    const cell = document.createElement('td');
+let categories = [];
 
-    const deleteButton = document.createElement('button');
-    deleteButton.innerText = 'Delete';
-    deleteButton.addEventListener('click', () => deleteEntry(entry.id));
-    cell.appendChild(deleteButton);
+function renderCategoryDropdown() {
+    let dropdown = document.getElementById("categoriesDropdown");
+    for(let i = 0;i<categories.length;i++) {
+        const categoryIndex = i;
+        let option = document.createElement("option");
+        option.innerText = categories[categoryIndex].name;
+        option.value = categoryIndex;
+        dropdown.appendChild(option);
+    }
+}
 
-    const editButton = document.createElement('button');
-    editButton.innerText = 'Edit';
-    editButton.addEventListener('click', () => editEntry(entry));
-    cell.appendChild(editButton);
-
-    return cell;
+const loadCategories = () => {
+    fetch(`${URL}/categories`, {
+        method: 'GET'
+    }).then((result) => {
+        result.json().then((result) => {
+            categories = result;
+            renderCategoryDropdown();
+        });
+    });
 }
 
 const renderEntries = () => {
@@ -127,14 +137,37 @@ const renderEntries = () => {
         row.appendChild(createCell(entry.id));
         row.appendChild(createCell(new Date(entry.checkIn).toLocaleString()));
         row.appendChild(createCell(new Date(entry.checkOut).toLocaleString()));
-        row.appendChild(createActions(entry));
+        row.appendChild(createCell(entry.category.name));
+
+        const deleteButton = document.createElement('button');
+        deleteButton.innerText = "Delete";
+        deleteButton.onclick = function() {
+            deleteEntry(entry.id);
+            indexEntries();
+        };
+        row.appendChild(deleteButton);
+
+        const updateButton = document.createElement('button');
+        updateButton.innerText = "Update";
+        updateButton.onclick = function() {
+            let checkInDate = new Date(entry.checkIn);
+            checkInDate.setMinutes(checkInDate.getMinutes() - checkInDate.getTimezoneOffset());
+            let checkOutDate = new Date(entry.checkOut);
+            checkOutDate.setMinutes(checkOutDate.getMinutes() - checkOutDate.getTimezoneOffset());
+            document.getElementById("id").value = entry.id;
+            document.getElementById("checkIn").value = checkInDate.toISOString().slice(0, 16);
+            document.getElementById("checkOut").value = checkOutDate.toISOString().slice(0, 16);
+            document.getElementById("categoriesDropdown").selectedIndex = categories.map(function(e) { return e.id; }).indexOf(entry.category.id);
+            openUpdateEntryForm();
+        }
+        row.appendChild(updateButton);
+
         display.appendChild(row);
     });
 };
 
 document.addEventListener('DOMContentLoaded', function(){
-    const entryForm = document.querySelector('#createEntryForm');
-    entryForm.addEventListener('submit', saveForm);
-    entryForm.addEventListener('reset', resetForm);
+    closeUpdateEntryForm();
     indexEntries();
+    loadCategories();
 });

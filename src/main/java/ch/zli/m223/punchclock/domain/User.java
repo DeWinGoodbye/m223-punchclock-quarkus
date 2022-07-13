@@ -1,6 +1,5 @@
 package ch.zli.m223.punchclock.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
