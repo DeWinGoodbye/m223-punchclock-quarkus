@@ -15,7 +15,7 @@ public class Project {
     @Column(nullable = false)
     private String title;
 
-    @OneToMany(mappedBy="project")
+    @OneToMany(mappedBy="project", orphanRemoval = true)
     @JsonIgnore
     private List<Entry> entries;
 
