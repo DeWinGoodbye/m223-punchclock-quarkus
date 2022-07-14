@@ -15,7 +15,7 @@ public class Project {
     @Column(nullable = false)
     private String title;
 
-    @OneToMany(mappedBy="category")
+    @OneToMany(mappedBy="project")
     @JsonIgnore
     private List<Entry> entries;
 

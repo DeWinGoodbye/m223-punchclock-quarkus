@@ -19,7 +19,7 @@ public class ProjectService {
 
     @Transactional 
     public Project createProject(Project project) {
-        entityManager.persist(project);
+        entityManager.merge(project);
         return project;
     }
 

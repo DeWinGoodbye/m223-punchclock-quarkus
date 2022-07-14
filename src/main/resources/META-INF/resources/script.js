@@ -23,6 +23,7 @@ const createEntry = (e) => {
     let data = {};
     data["checkIn"] = formData.get("checkIn");
     data["checkOut"] = formData.get("checkOut");
+    data["project"] = projects[formData.get("project")];
     data["category"] = categories[formData.get("category")];
 
     fetch(`${URL}/entries`, {
@@ -53,6 +54,7 @@ const updateEntry = (e) => {
     data["id"] = formData.get("id");
     data["checkIn"] = formData.get("checkIn");
     data["checkOut"] = formData.get("checkOut");
+    data["project"] = projects[formData.get("project")];
     data["category"] = categories[formData.get("category")];
 
     fetch(`${URL}/entries`, {
@@ -105,6 +107,30 @@ const createCell = (text) => {
     return cell;
 };
 
+let projects = [];
+
+function renderProjectDropdown() {
+    let dropdown = document.getElementById("projectsDropdown");
+    for(let i = 0;i<projects.length;i++) {
+        const projectIndex = i;
+        let option = document.createElement("option");
+        option.innerText = projects[projectIndex].title;
+        option.value = projectIndex;
+        dropdown.appendChild(option);
+    }
+}
+
+const loadProjects = () => {
+    fetch(`${URL}/projects`, {
+        method: 'GET'
+    }).then((result) => {
+        result.json().then((result) => {
+            projects = result;
+            renderProjectDropdown();
+        });
+    });
+}
+
 let categories = [];
 
 function renderCategoryDropdown() {
@@ -137,6 +163,7 @@ const renderEntries = () => {
         row.appendChild(createCell(entry.id));
         row.appendChild(createCell(new Date(entry.checkIn).toLocaleString()));
         row.appendChild(createCell(new Date(entry.checkOut).toLocaleString()));
+        row.appendChild(createCell(entry.project.title));
         row.appendChild(createCell(entry.category.name));
 
         const deleteButton = document.createElement('button');
@@ -157,6 +184,7 @@ const renderEntries = () => {
             document.getElementById("id").value = entry.id;
             document.getElementById("checkIn").value = checkInDate.toISOString().slice(0, 16);
             document.getElementById("checkOut").value = checkOutDate.toISOString().slice(0, 16);
+            document.getElementById("projectsDropdown").selectedIndex = projects.map(function(e) { return e.id; }).indexOf(entry.project.id);
             document.getElementById("categoriesDropdown").selectedIndex = categories.map(function(e) { return e.id; }).indexOf(entry.category.id);
             openUpdateEntryForm();
         }
@@ -169,5 +197,6 @@ const renderEntries = () => {
 document.addEventListener('DOMContentLoaded', function(){
     closeUpdateEntryForm();
     indexEntries();
+    loadProjects();
     loadCategories();
 });

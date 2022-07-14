@@ -11,6 +11,7 @@
     </head>
     <body>
         <button onclick="location.href = 'editcategory.html'">Kategorien</button>
+        <button onclick="location.href = 'editproject.html'">Projekte</button>
         <form id="createEntryForm">
             <button id="updateBack" onclick="openUpdateEntryForm(); ">Back</button>
             <p id="formTitle"></p>
@@ -19,9 +20,8 @@
             <input type="datetime-local" name="checkIn" id="checkIn" required>
             <label for="checkOut">Check out</label>
             <input type="datetime-local" name="checkOut" id="checkOut" required>
-            <select id="categoriesDropdown" name="category">
-
-            </select>
+            <select id="categoriesDropdown" name="category"></select>
+            <select id="projectsDropdown" name="project"></select>
             <p id="error" style="color:red;"></p>
             <input type="submit" value="Save" />
         </form>
@@ -31,6 +31,7 @@
                     <th>ID</th>
                     <th>Check in</th>
                     <th>Check out</th>
+                    <th>Project</th>
                     <th>Category</th>
 
                 </tr>
