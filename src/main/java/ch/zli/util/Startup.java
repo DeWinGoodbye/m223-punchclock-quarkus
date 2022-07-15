@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import ch.zli.m223.punchclock.domain.Category;
 import ch.zli.m223.punchclock.domain.Project;
 import ch.zli.m223.punchclock.domain.User;
+import ch.zli.m223.punchclock.service.AuthenticationService;
 import ch.zli.m223.punchclock.service.CategoryService;
 import ch.zli.m223.punchclock.service.ProjectService;
 import ch.zli.m223.punchclock.service.UserService;
@@ -25,6 +26,9 @@ public class Startup {
 
     @Inject
     UserService userService;
+
+    @Inject
+    AuthenticationService authService;
 
     @Transactional
     public void loadCategories(@Observes StartupEvent evt) {
@@ -53,9 +57,9 @@ public class Startup {
     public void addUser(String username, String password, String role){
         User user = new User();
         user.setUsername(username);
-        user.setPassword(username);
-        user.setRole(username);
+        user.setPassword(password);
+        user.setRole(role);
 
-        userService.createUser(user);
+        authService.createNewUser(user);
     }
 }

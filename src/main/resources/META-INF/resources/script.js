@@ -199,4 +199,8 @@ document.addEventListener('DOMContentLoaded', function(){
     indexEntries();
     loadProjects();
     loadCategories();
+
+    if(localStorage.getItem("token") == undefined) {
+        this.location.href = "login.html";
+    }
 });
