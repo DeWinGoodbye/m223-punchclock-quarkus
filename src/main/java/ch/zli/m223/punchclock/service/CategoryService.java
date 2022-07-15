@@ -14,9 +14,6 @@ public class CategoryService {
     @Inject
     private EntityManager entityManager;
 
-    public CategoryService() {
-    }
-
     @Transactional 
     public Category createCategory(Category category) {
         entityManager.persist(category);
