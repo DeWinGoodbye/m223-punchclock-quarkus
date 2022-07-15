@@ -5,7 +5,6 @@ import java.util.List;
 import javax.persistence.*;
 
 import io.quarkus.security.jpa.Password;
-import io.quarkus.security.jpa.Roles;
 import io.quarkus.security.jpa.UserDefinition;
 import io.quarkus.security.jpa.Username;
 
@@ -24,10 +23,6 @@ public class User {
     @Password
     @Column(nullable = false)
     private String password;
-
-    @Roles
-    @Column(nullable = false)
-    private String role;
 
     @OneToMany(mappedBy="user")
     private List<Entry> entries;
@@ -54,14 +49,5 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-
-    public String getRole() {
-        return this.role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 }
