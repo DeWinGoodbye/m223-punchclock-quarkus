@@ -15,7 +15,7 @@ public class Project {
     @Column(nullable = false)
     private String title;
 
-    @OneToMany(mappedBy="project", orphanRemoval = true)
+    @OneToMany(mappedBy="project", cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Entry> entries;
 
