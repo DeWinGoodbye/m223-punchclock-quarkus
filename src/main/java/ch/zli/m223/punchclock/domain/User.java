@@ -29,7 +29,7 @@ public class User {
     @Column(nullable = false)
     private String role;
 
-    @OneToMany(mappedBy="user", cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy="user",cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Entry> entries;
 
     public long getId() {

@@ -10,12 +10,16 @@
     <title></title>
 </head>
 <body>
-    <form id="loginForm">
-        <label for="User Name">Username</label>
-        <input type="text" name="username" id="userName">
-        <label for="Password">Passwort</label>
-        <input type="password" name="password" id="userPassword">
-        <input type="submit" value="Anmelden">
+    <form id="createUserForm">
+        <button id="updateBack" onclick="openUpdateUserForm(); ">Abbrechen</button>
+        <p id="formTitle"></p>
+        <input type="hidden" id="id" name="id">
+        <label for="projectTitle">Anmelden</label>
+        <input type="text" name="username" id="username">
+        <input type="password" name="password" id="password">
+        <input type="text" disabled="true" id="role" name="role" value="user">
+        <p id="error" style="color:red;"></p>
+        <input type="submit" value="Save">
     </form>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="RequestUtil.js"></script>

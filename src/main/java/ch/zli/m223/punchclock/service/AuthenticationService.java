@@ -20,13 +20,17 @@ public class AuthenticationService {
     @Inject
     private EntityManager entityManager;
 
+    
     public boolean checkIfUserExists(User user){        
         var query = entityManager.createQuery("SELECT COUNT(*) FROM User WHERE username = :name AND password = :password");        
         query.setParameter("name", user.getUsername());
-        query.setParameter("password", BcryptUtil.bcryptHash(user.getPassword()));
+        query.setParameter("password", /*BcryptUtil.bcryptHash(*/user.getPassword()/* )*/);
         var result = query.getSingleResult();
 
-        return (long)result == 1;
+        if((long) result ==1){
+            return true;
+        }
+        return false;
     }
 
     public void createNewUser(User user) {
