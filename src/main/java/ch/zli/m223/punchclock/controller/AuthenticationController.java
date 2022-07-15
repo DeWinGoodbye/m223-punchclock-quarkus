@@ -13,12 +13,23 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import ch.zli.m223.punchclock.domain.User;
 import ch.zli.m223.punchclock.service.AuthenticationService;
 
+/*
+ * AuthenticationController
+ * The Auth-Controller handles the authentication Process
+ * 
+ * Source: https://moodle-2.zli.ch/course/view.php?id=1202&section=5
+ */
+
 @Path("/auth")
 @Tag(name = "Authorization", description = "Handles the User authorization")
 public class AuthenticationController {
     @Inject
     AuthenticationService authenticationService; 
 
+    /*
+     * Login
+     * This HTTP POST-Method handles the Login-request
+     */
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -31,6 +42,10 @@ public class AuthenticationController {
         } 
     }
 
+     /*
+     * Register
+     * This HTTP POST-Method handles the Register-request
+     */
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
